@@ -37,6 +37,7 @@ def download_resume(
     resumeio = ResumeioDownloader(rendering_token=rendering_token, image_size=image_size, extension=extension)
     return Response(
         resumeio.generate_pdf(),
+        media_type="application/pdf",
         headers={"Content-Disposition": f'inline; filename="{rendering_token}.pdf"'},
     )
 
