@@ -5,12 +5,41 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <title>Resume.io to PDF</title>
 
     <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: "Inter", sans-serif;
+            background: #08080d;
+            color: #e4e4e7;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Subtle animated gradient background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 20%, rgba(124, 58, 237, 0.06) 0%, transparent 50%),
+                        radial-gradient(ellipse at 70% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
+            z-index: -1;
+            animation: bgShift 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes bgShift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-5%, 3%); }
         }
 
         .container {
@@ -20,110 +49,252 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 3rem;
+            padding: 2rem;
+            gap: 0;
         }
 
-        .links {
+        /* Top bar */
+        .top-bar {
             position: absolute;
             top: 0;
+            left: 0;
             right: 0;
             display: flex;
+            justify-content: flex-end;
+            padding: 1.25rem 2rem;
+        }
+
+        .support-link {
+            display: inline-flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.4rem;
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            background: rgba(124, 58, 237, 0.12);
+            border: 1px solid rgba(124, 58, 237, 0.25);
+            color: #a78bfa;
+            text-decoration: none;
+            font-family: "Inter", sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            transition: all 0.3s ease;
+        }
+
+        .support-link:hover {
+            background: rgba(124, 58, 237, 0.22);
+            border-color: rgba(124, 58, 237, 0.5);
+            color: #c4b5fd;
+            transform: translateY(-1px);
+        }
+
+        /* Main card */
+        .card {
+            background: rgba(17, 17, 27, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 520px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            box-shadow: 0 0 80px rgba(124, 58, 237, 0.04),
+                        0 4px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+        }
+
+        .terminal-tag {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.7rem;
+            color: #6d6d80;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .terminal-tag span {
+            color: #7c3aed;
         }
 
         .title {
-            font-size: 3rem;
+            font-size: 1.75rem;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #e4e4e7 0%, #a1a1aa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.3;
         }
 
+        .subtitle {
+            font-size: 0.85rem;
+            color: #52525b;
+            margin-top: 0.5rem;
+            font-weight: 300;
+        }
+
+        /* Form */
         .resume_form {
             display: flex;
-            align-items: center;
             flex-direction: column;
-            min-width: 30rem;
-            gap: 2rem;
+            width: 100%;
+            gap: 1rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(9, 9, 16, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: rgba(124, 58, 237, 0.5);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1),
+                        0 0 20px rgba(124, 58, 237, 0.05);
+        }
+
+        .input-prefix {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.85rem;
+            color: #7c3aed;
+            padding-left: 1rem;
+            user-select: none;
+            flex-shrink: 0;
         }
 
         .resume {
             width: 100%;
-            padding: 1rem;
-            border-radius: 4px;
-            border: 1px solid #666666;
-            font-family: "Inter", sans-serif;
-            font-size: 1rem;
+            padding: 0.9rem 1rem;
+            border: none;
+            background: transparent;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.85rem;
+            color: #e4e4e7;
+            outline: none;
+            letter-spacing: 0.03em;
+        }
+
+        .resume::placeholder {
+            color: #3f3f50;
+        }
+
+        .error {
+            display: none;
+            color: #f87171;
+            font-size: 0.75rem;
+            font-family: "JetBrains Mono", monospace;
+            padding-left: 0.25rem;
+        }
+
+        .error-border {
+            border-color: rgba(248, 113, 113, 0.5) !important;
+            box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.08) !important;
         }
 
         .btn {
             display: flex;
             justify-content: center;
             align-items: center;
-            border-radius: 4px;
+            border-radius: 10px;
             border: none;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-family: "Inter", sans-serif;
-            background-color: #1c1c1c;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            background: linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%);
             color: #ffffff;
             cursor: pointer;
-            width: 12rem;
-            height: 3.5rem;
+            width: 100%;
+            height: 3rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #6d28d9 0%, #2563eb 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn:hover::before {
+            opacity: 1;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.25);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn span, .btn svg {
+            position: relative;
+            z-index: 1;
         }
 
         #loader {
             display: none;
         }
 
-        .error {
-            margin-right: auto;
-            display: none;
-            color: red;
-            font-size: 0.8rem;
-        }
-
-        .error-border {
-            border: 1px solid red;
-        }
-
-        .support-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            padding: 0.5rem 1.2rem;
-            border-radius: 4px;
-            background-color: #1c1c1c;
-            color: #ffffff;
-            text-decoration: none;
-            font-family: "Inter", sans-serif;
-            font-size: 0.9rem;
-            transition: background-color 0.2s;
-        }
-
-        .support-link:hover {
-            background-color: #333333;
-        }
-
+        /* How-to section */
         .how-to {
             width: 100%;
-            max-width: 30rem;
-            text-align: left;
+            max-width: 520px;
+            margin-top: 1.5rem;
         }
 
         .how-to summary {
             cursor: pointer;
-            font-size: 0.95rem;
-            color: #555;
-            padding: 0.5rem 0;
+            font-size: 0.82rem;
+            color: #52525b;
+            padding: 0.75rem 0;
             user-select: none;
+            font-family: "JetBrains Mono", monospace;
+            transition: color 0.2s;
+            list-style: none;
+        }
+
+        .how-to summary::-webkit-details-marker { display: none; }
+
+        .how-to summary::before {
+            content: '▸ ';
+            color: #7c3aed;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+
+        .how-to[open] summary::before {
+            content: '▾ ';
         }
 
         .how-to summary:hover {
-            color: #1c1c1c;
+            color: #a1a1aa;
         }
 
         .how-to-content {
-            padding: 0.5rem 0;
-            font-size: 0.9rem;
-            color: #444;
-            line-height: 1.8;
+            padding: 0.75rem 0;
+            font-size: 0.82rem;
+            color: #71717a;
+            line-height: 2;
         }
 
         .how-to-content ol {
@@ -132,90 +303,105 @@
         }
 
         .how-to-content li {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.6rem;
         }
 
         .how-to-content code {
-            background: #f1f1f1;
-            padding: 0.15rem 0.4rem;
-            border-radius: 3px;
-            font-size: 0.8rem;
+            font-family: "JetBrains Mono", monospace;
+            background: rgba(124, 58, 237, 0.1);
+            border: 1px solid rgba(124, 58, 237, 0.15);
+            padding: 0.12rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: #a78bfa;
         }
 
         .how-to-content a {
-            color: #1c1c1c;
+            color: #7c3aed;
+            text-decoration: none;
             font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .how-to-content a:hover {
+            color: #a78bfa;
         }
 
         .code-block {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            background: #f5f5f5;
-            padding: 0.5rem 0.75rem;
-            border-radius: 4px;
+            background: rgba(9, 9, 16, 0.8);
+            padding: 0.6rem 0.85rem;
+            border-radius: 8px;
             margin: 0.4rem 0;
-            border: 1px solid #e0e0e0;
+            border: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .code-block code {
             background: none;
+            border: none;
             padding: 0;
-            font-size: 0.78rem;
+            font-size: 0.72rem;
             flex: 1;
             word-break: break-all;
+            color: #a1a1aa;
         }
 
         .copy-btn {
             background: none;
             border: none;
             cursor: pointer;
-            padding: 0.25rem;
-            color: #666;
-            border-radius: 3px;
+            padding: 0.3rem;
+            color: #52525b;
+            border-radius: 4px;
             display: flex;
             align-items: center;
+            transition: all 0.2s;
         }
 
         .copy-btn:hover {
-            background: #e0e0e0;
-            color: #1c1c1c;
+            background: rgba(124, 58, 237, 0.15);
+            color: #a78bfa;
         }
 
         .hint {
-            font-size: 0.78rem;
-            color: #888;
+            font-size: 0.72rem;
+            color: #3f3f50;
         }
 
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.7rem;
+            color: #27272a;
+            font-family: "JetBrains Mono", monospace;
+        }
+
+        /* Animations */
         .spinner_V8m1 {
             transform-origin: center;
-            animation: spinner_zKoa 2s linear infinite
+            animation: spinner_zKoa 2s linear infinite;
         }
 
         .spinner_V8m1 circle {
             stroke-linecap: round;
-            animation: spinner_YpZS 1.5s ease-in-out infinite
+            animation: spinner_YpZS 1.5s ease-in-out infinite;
         }
 
         @keyframes spinner_zKoa {
-            100% {
-                transform: rotate(360deg)
-            }
+            100% { transform: rotate(360deg); }
         }
 
         @keyframes spinner_YpZS {
-            0% {
-                stroke-dasharray: 0 150;
-                stroke-dashoffset: 0
-            }
-            47.5% {
-                stroke-dasharray: 42 150;
-                stroke-dashoffset: -16
-            }
-            95%, 100% {
-                stroke-dasharray: 42 150;
-                stroke-dashoffset: -59
-            }
+            0% { stroke-dasharray: 0 150; stroke-dashoffset: 0; }
+            47.5% { stroke-dasharray: 42 150; stroke-dashoffset: -16; }
+            95%, 100% { stroke-dasharray: 42 150; stroke-dashoffset: -59; }
         }
 
         @keyframes shake {
@@ -237,56 +423,82 @@
             animation-iteration-count: 1;
         }
 
+        /* Responsive */
+        @media (max-width: 580px) {
+            .card {
+                padding: 2rem 1.5rem;
+                border-radius: 12px;
+            }
+            .title { font-size: 1.4rem; }
+            .resume { font-size: 0.8rem; }
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="links">
+    <div class="top-bar">
         <a href="https://bondin.io/starky/support" target="_blank" class="support-link">♥ Support</a>
     </div>
-    <h1 class="title">Resume.io to PDF</h1>
-    <form method="post" class="resume_form" id="downloadForm">
-        <input type="text" class="resume" name="rendering_token" placeholder="Enter your resume `renderingToken`" aria-label="Id" maxlength="24">
-        <span class="error">Your resume `renderingToken` must be a 24-character alphanumeric string</span>
-        <button id="submit-btn" class="btn" type="submit"><span id="submit-text">Download</span>
-            <svg id="loader" width="23" height="23" stroke="#fff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <g class="spinner_V8m1">
-                    <circle cx="12" cy="12" r="9.5" fill="none" stroke-width="3"></circle>
-                </g>
-            </svg>
-        </button>
-    </form>
+
+    <div class="card">
+        <div class="header">
+            <div class="terminal-tag"><span>~/</span>resume-converter</div>
+            <h1 class="title">Resume.io to PDF</h1>
+            <p class="subtitle">Convert your resume to a downloadable PDF — all pages included</p>
+        </div>
+
+        <form method="post" class="resume_form" id="downloadForm">
+            <div>
+                <div class="input-wrapper">
+                    <span class="input-prefix">&gt;_</span>
+                    <input type="text" class="resume" name="rendering_token" placeholder="paste renderingToken here..." aria-label="Rendering Token" maxlength="24" autocomplete="off" spellcheck="false">
+                </div>
+                <span class="error">✗ Token must be a 24-character alphanumeric string</span>
+            </div>
+            <button id="submit-btn" class="btn" type="submit">
+                <span id="submit-text">↓ Download PDF</span>
+                <svg id="loader" width="22" height="22" stroke="#fff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <g class="spinner_V8m1">
+                        <circle cx="12" cy="12" r="9.5" fill="none" stroke-width="3"></circle>
+                    </g>
+                </svg>
+            </button>
+        </form>
+    </div>
+
     <details class="how-to">
-        <summary>How to find your <code>renderingToken</code>?</summary>
+        <summary>How to find your <code>renderingToken</code></summary>
         <div class="how-to-content">
             <ol>
                 <li>Log in to your <a href="https://resume.io" target="_blank">resume.io</a> account</li>
                 <li>Open this URL in your browser:
                     <div class="code-block">
                         <code id="resume-url">https://resume.io/api/app/resumes</code>
-                        <button class="copy-btn" onclick="copyToClipboard('resume-url')" title="Copy">
+                        <button type="button" class="copy-btn" onclick="copyToClipboard('resume-url')" title="Copy URL">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                         </button>
                     </div>
-                    <span class="hint">For cover letters use: <code>https://resume.io/api/app/cover-letters/</code></span>
+                    <span class="hint">For cover letters: <code>https://resume.io/api/app/cover-letters/</code></span>
                 </li>
                 <li>Find your resume in the JSON response</li>
-                <li>Copy the <code>renderingToken</code> value (24-character string)</li>
+                <li>Copy the <code>renderingToken</code> value — a 24-character string</li>
             </ol>
         </div>
     </details>
-</div>
 
+    <div class="footer">built by starky • powered by resume.io rendering api</div>
+</div>
 
 <script>
     window.addEventListener('pageshow', function() {
         document.getElementById('loader').style.display = 'none';
-        document.getElementById('submit-text').style.display = 'block';
+        document.getElementById('submit-text').style.display = 'inline';
     });
 
     const downloadForm = document.getElementById("downloadForm");
     const errorMessage = document.querySelector('.error');
     const inputField = document.querySelector('.resume');
+    const inputWrapper = document.querySelector('.input-wrapper');
 
     downloadForm.addEventListener("submit", function (e) {
         e.preventDefault();
@@ -295,17 +507,17 @@
 
         if (!regex.test(rendering_token)) {
             errorMessage.style.display = 'block';
-            inputField.classList.add('error-border');
-            inputField.classList.remove('shake');
+            inputWrapper.classList.add('error-border');
+            inputWrapper.classList.remove('shake');
 
             setTimeout(function() {
-                inputField.classList.add('shake');
+                inputWrapper.classList.add('shake');
             }, 100);
 
             return;
         } else {
             errorMessage.style.display = 'none';
-            inputField.classList.remove('error-border', 'shake');
+            inputWrapper.classList.remove('error-border', 'shake');
         }
 
         downloadForm.action = '/download/' + rendering_token;
@@ -319,7 +531,9 @@
         navigator.clipboard.writeText(text).then(function() {
             const btn = document.querySelector('#' + elementId + ' + .copy-btn');
             btn.innerHTML = '✓';
+            btn.style.color = '#34d399';
             setTimeout(function() {
+                btn.style.color = '';
                 btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
             }, 1500);
         });
