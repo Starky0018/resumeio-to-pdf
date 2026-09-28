@@ -55,20 +55,18 @@ class ResumeioDownloader:
         bool
             True if the image appears to be a blank placeholder.
         """
-        # A blank placeholder is mostly white but has a very faint watermark.
-        # To avoid being fooled by the watermark, we resize to 100x100 (10,000 pixels)
-        # and count the total number of dark pixels.
-        # The watermark produces ~60 dark pixels. A real resume will have >500.
-        thumb = img.convert("RGB").resize((100, 100))
-        dark_pixels = 0
+        # A blank placeholder from resume.io only has very faint colors (the watermark).
+        # Its darkest pixel is around RGB(221, 227, 240).
+        # A real resume page will have text or graphics, meaning it will have 
+        # much darker pixels (well below 150).
+        extrema = img.convert("RGB").getextrema()
+        min_r, min_g, min_b = extrema[0][0], extrema[1][0], extrema[2][0]
         
-        for x in range(100):
-            for y in range(100):
-                r, g, b = thumb.getpixel((x, y))
-                if r < 245 or g < 245 or b < 245:
-                    dark_pixels += 1
-                    
-        return dark_pixels < 200
+        # If the darkest pixel in the entire image is still very light, it's the blank placeholder.
+        if min_r > 150 and min_g > 150 and min_b > 150:
+            return True
+            
+        return False
 
     def generate_pdf(self) -> bytes:
         """
