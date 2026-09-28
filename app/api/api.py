@@ -14,6 +14,7 @@ templates = Jinja2Templates(directory="templates")
 @router.post("/download/{rendering_token}")
 def download_resume(
     rendering_token: Annotated[str, Path(min_length=24, max_length=24, pattern="^[a-zA-Z0-9]{24}$")],
+    pages: Annotated[int, Query(ge=1, le=10)] = 1,
     image_size: Annotated[int, Query(gt=0, le=2000)] = 2000,
     extension: Annotated[Extension, Query()] = Extension.jpeg,
 ):
@@ -24,8 +25,10 @@ def download_resume(
     ----------
     rendering_token : str
         Rendering Token of the resume to download.
+    pages : int, optional
+        Number of pages to download, by default 1.
     image_size : int, optional
-        Size of the images to download, by default 3000.
+        Size of the images to download, by default 2000.
     extension : Extension, optional
         Image extension to download, by default "jpeg".
 
@@ -36,7 +39,7 @@ def download_resume(
     """
     resumeio = ResumeioDownloader(rendering_token=rendering_token, image_size=image_size, extension=extension)
     return Response(
-        resumeio.generate_pdf(),
+        resumeio.generate_pdf(num_pages=pages),
         media_type="application/pdf",
         headers={"Content-Disposition": f'inline; filename="{rendering_token}.pdf"'},
     )

@@ -354,6 +354,11 @@
                 <span class="error">Error: Token must be a 24-character alphanumeric string.</span>
             </div>
             
+            <div class="input-group" style="margin-top: -0.5rem; display: flex; flex-direction: row; align-items: center; justify-content: space-between; background-color: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 0.5rem 0.75rem;">
+                <label for="pages" style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #8b949e;">Number of pages:</label>
+                <input type="number" id="pages" name="pages" value="1" min="1" max="10" style="background: transparent; border: none; color: #c9d1d9; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; width: 40px; text-align: right; outline: none;">
+            </div>
+            
             <button id="submit-btn" class="btn" type="submit">
                 <span id="submit-text">Generate PDF</span>
                 <svg id="loader" width="22" height="22" stroke="#fff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -399,7 +404,9 @@
 
     downloadForm.addEventListener("submit", function (e) {
         e.preventDefault();
-        const rendering_token = new FormData(downloadForm).get('rendering_token').toString().trim();
+        const formData = new FormData(downloadForm);
+        const rendering_token = formData.get('rendering_token').toString().trim();
+        const pages = formData.get('pages').toString().trim() || '1';
         const regex = /^[a-zA-Z0-9]{24}$/;
 
         if (!regex.test(rendering_token)) {
@@ -417,7 +424,7 @@
             inputWrapper.classList.remove('error-border', 'shake');
         }
 
-        downloadForm.action = '/download/' + rendering_token;
+        downloadForm.action = '/download/' + rendering_token + '?pages=' + pages;
         document.getElementById('submit-text').style.display = 'none';
         document.getElementById('loader').style.display = 'block';
         this.submit();
